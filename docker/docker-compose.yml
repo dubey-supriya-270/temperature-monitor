@@ -1,0 +1,77 @@
+version: "3.7"
+services:
+  redis:
+    image: "redis:alpine"
+    container_name: redis-container
+    ports:
+      - "6379:6379"  # Exposing Redis port
+    networks:
+      - temperature-monitoring-network
+    restart: unless-stopped  # Ensures Redis restarts if it crashes
+
+  mongodb:
+    image: "mongo:latest"
+    container_name: mongodb-container
+    ports:
+      - "27017:27017"  # Exposing MongoDB port
+    networks:
+      - temperature-monitoring-network
+    restart: unless-stopped  # Ensures MongoDB restarts if it crashes
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example  # You can replace 'example' with a custom password
+      MONGO_INITDB_DATABASE: temperatureDB
+    volumes:
+      - ./init-scripts:/docker-entrypoint-initdb.d:ro
+
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    container_name: rabbitmq-container
+    ports:
+      - "5672:5672"    # AMQP protocol port
+      - "15672:15672"  # RabbitMQ Management UI port
+    networks:
+      - temperature-monitoring-network
+    restart: unless-stopped  # Ensures RabbitMQ restarts if it crashes
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest  # Default user credentials
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: backend-container
+    ports:
+      - "3000:3000"  # Exposing backend port
+    networks:
+      - temperature-monitoring-network
+    depends_on:
+      - mongodb
+      - rabbitmq
+      - redis
+    environment:
+      MONGODB_URI: mongodb://root:example@mongodb:27017/temperatureDB?authSource=admin
+      RABBITMQ_HOST: rabbitmq
+      REDIS_URL: redis://redis:6379/0
+      ALLOWED_ORIGINS: http://frontend:3001
+      PORT: 3000
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: frontend-container
+    ports:
+      - "3001:80"  # Exposing frontend port
+    networks:
+      - temperature-monitoring-network
+    depends_on:
+      - backend
+    environment:
+      VITE_SOCKET_URL: wss://backend:3000
+
+networks:
+  temperature-monitoring-network:
+    driver: bridge
