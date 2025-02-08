@@ -8,6 +8,7 @@ interface Reading {
   temperature: number;
   status: string;
   timestamp: string;
+  uniqueId: string
 }
 
 const App: React.FC = () => {
@@ -24,12 +25,29 @@ const App: React.FC = () => {
       setConnectionStatus("Connected");
     });
 
-    socket.on("temperature", (data) => {
+    socket.on("temperature_raw", (data) => {
       setTemperature(data.temperature);
       setStatus(data.status);
 
       setReadings((prevReadings) => {
         const newReadings = [...prevReadings, data];
+        return newReadings.length > 5 ? newReadings.slice(1) : newReadings;
+      });
+    });
+
+    socket.on("temperature_processed", (data) => {
+
+      setReadings((prevReadings) => {
+        const updatedReadings = prevReadings.map((reading) => 
+          reading.uniqueId === data.uniqueId ? { ...reading, status: data.status } : reading
+        );
+    
+        // Add the new data if not already in the array
+        const newReadings = updatedReadings.length === prevReadings.length
+          ? [...updatedReadings, data]
+          : updatedReadings;
+    
+        // Keep the length of the array to a maximum of 5
         return newReadings.length > 5 ? newReadings.slice(1) : newReadings;
       });
     });

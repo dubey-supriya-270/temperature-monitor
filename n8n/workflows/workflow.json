@@ -1,0 +1,106 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/temperature",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -340,
+        240
+      ],
+      "id": "7c307381-31ab-446b-b203-0a25fab9ae26",
+      "name": "Webhook",
+      "webhookId": "8c62dccb-184c-4347-b9c1-6ed116b747c2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "607b3d63-d8af-48f3-bf0a-c71c29a4038e",
+              "name": "=status",
+              "value": "={{ $json.body.temperature * 1 > 35 ? \"HIGH\" : \"NORMAL\"}}",
+              "type": "string"
+            },
+            {
+              "id": "568c134d-fa13-41a9-8e62-2faa35e411f0",
+              "name": "temperature",
+              "value": "={{ $json.body.temperature * 1 }}",
+              "type": "number"
+            },
+            {
+              "id": "c90c526f-18ea-4a11-8494-188f140c9e69",
+              "name": "uniqueId",
+              "value": "={{ $json.body.uniqueId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a4eb454f-e391-4d92-94eb-6b3fc4c3b4d5",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        40
+      ],
+      "id": "ed22b004-a277-4ca9-9a1d-58fd102e258a",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2fac9d21-25f9-4d2d-9262-d22ae3e9a1b7",
+  "meta": {
+    "instanceId": "59261ad0c66716d211def472f0d28aae0564bad8da616f788088825deb60cc34"
+  },
+  "id": "X9CWUFR9npwOnGJ1",
+  "tags": []
+}
