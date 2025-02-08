@@ -4,11 +4,10 @@ This is a real-time temperature monitoring system that processes and visualizes 
 
 ![Frontend Demo Screenshot](/frontend/public/frontend-demo.png)
 
-<video width="640" height="360" controls>
-  <source src="/frontend/public/demo.webm" type="video/webm">
-  Your browser does not support the video tag.
+<video width="600" controls>
+  <source src="/frontend/public/demo.mp4" type="video/mp4">
+  Demo video
 </video>
-
 ## Architecture Overview
 
 The system uses the following technologies:
