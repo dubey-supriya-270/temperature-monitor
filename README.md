@@ -2,12 +2,11 @@
 
 This is a real-time temperature monitoring system that processes and visualizes temperature data in real-time using a modern microservices architecture.
 
-![Frontend Demo Screenshot](/frontend/public/frontend-demo.png)
+![Demo Screenshot](/frontend/public/demo.png)
 
-<video width="600" controls>
-  <source src="/frontend/public/demo.mp4" type="video/mp4">
-  Demo video
-</video>
+![Demo Gif](/frontend/public/demo.gif)
+
+
 ## Architecture Overview
 
 The system uses the following technologies:
